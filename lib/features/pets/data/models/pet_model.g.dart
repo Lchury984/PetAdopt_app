@@ -13,7 +13,10 @@ PetModel _$PetModelFromJson(Map<String, dynamic> json) => PetModel(
       breed: json['breed'] as String,
       age: (json['age'] as num).toInt(),
       description: json['description'] as String,
-      imageUrl: json['image_url'] as String?,
+      imageUrls: (json['image_urls'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const [],
       shelterId: json['shelter_id'] as String,
       adopted: json['adopted'] as bool? ?? false,
       createdAt: json['created_at'] as String,
@@ -26,7 +29,7 @@ Map<String, dynamic> _$PetModelToJson(PetModel instance) => <String, dynamic>{
       'breed': instance.breed,
       'age': instance.age,
       'description': instance.description,
-      'image_url': instance.imageUrl,
+      'image_urls': instance.imageUrls,
       'shelter_id': instance.shelterId,
       'adopted': instance.adopted,
       'created_at': instance.createdAt,

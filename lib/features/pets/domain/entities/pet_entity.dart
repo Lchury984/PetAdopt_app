@@ -6,7 +6,7 @@ class PetEntity {
   final String breed;
   final int age; // en meses
   final String description;
-  final String? imageUrl;
+  final List<String> imageUrls;
   final String shelterId;
   final bool adopted;
   final DateTime createdAt;
@@ -18,7 +18,7 @@ class PetEntity {
     required this.breed,
     required this.age,
     required this.description,
-    this.imageUrl,
+    this.imageUrls = const [],
     required this.shelterId,
     this.adopted = false,
     required this.createdAt,

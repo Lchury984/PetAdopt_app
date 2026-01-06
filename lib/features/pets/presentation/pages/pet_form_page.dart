@@ -34,10 +34,11 @@ class _PetFormPageState extends State<PetFormPage> {
   final _ageController = TextEditingController();
   final _descriptionController = TextEditingController();
   String _selectedType = AppConstants.petTypes.first;
-  Uint8List? _imageBytes;
-  String? _pickedImageName;
-  String? _existingImageUrl;
+  final List<Uint8List> _imageBytesList = [];
+  final List<String> _imageNamesList = [];
+  List<String> _existingImageUrls = [];
   bool _isSaving = false;
+  static const int maxImages = 5;
 
   @override
   void initState() {
@@ -48,7 +49,7 @@ class _PetFormPageState extends State<PetFormPage> {
       _ageController.text = widget.pet!.age.toString();
       _descriptionController.text = widget.pet!.description;
       _selectedType = widget.pet!.type;
-      _existingImageUrl = widget.pet!.imageUrl;
+      _existingImageUrls = List.from(widget.pet!.imageUrls);
     }
   }
 
@@ -80,15 +81,17 @@ class _PetFormPageState extends State<PetFormPage> {
   }
 
   Future<void> _uploadAndPersist(String name, String breed, int age, String description) async {
-    String? imageUrl = _existingImageUrl;
+    final List<String> allImageUrls = List.from(_existingImageUrls);
 
     try {
-      if (_imageBytes != null) {
-        final fileName = '${widget.shelterId}_${DateTime.now().millisecondsSinceEpoch}_${_pickedImageName ?? 'pet'}.jpg';
-        imageUrl = await context.read<PetsCubit>().uploadPetImage(
-              bytes: _imageBytes!,
+      // Upload new images
+      for (int i = 0; i < _imageBytesList.length; i++) {
+        final fileName = '${widget.shelterId}_${DateTime.now().millisecondsSinceEpoch}_$i.jpg';
+        final url = await context.read<PetsCubit>().uploadPetImage(
+              bytes: _imageBytesList[i],
               fileName: fileName,
             );
+        allImageUrls.add(url);
       }
 
       final pet = PetEntity(
@@ -98,7 +101,7 @@ class _PetFormPageState extends State<PetFormPage> {
         breed: breed,
         age: age,
         description: description,
-        imageUrl: imageUrl,
+        imageUrls: allImageUrls,
         shelterId: widget.shelterId,
         adopted: widget.pet?.adopted ?? false,
         createdAt: widget.pet?.createdAt ?? DateTime.now(),
@@ -123,6 +126,14 @@ class _PetFormPageState extends State<PetFormPage> {
   }
 
   Future<void> _pickImage() async {
+    final totalImages = _imageBytesList.length + _existingImageUrls.length;
+    if (totalImages >= maxImages) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Máximo 5 imágenes permitidas')),
+      );
+      return;
+    }
+
     final picker = ImagePicker();
     final picked = await picker.pickImage(
       source: ImageSource.gallery,
@@ -133,10 +144,23 @@ class _PetFormPageState extends State<PetFormPage> {
     if (picked != null) {
       final bytes = await picked.readAsBytes();
       setState(() {
-        _imageBytes = bytes;
-        _pickedImageName = picked.name;
+        _imageBytesList.add(bytes);
+        _imageNamesList.add(picked.name);
       });
     }
+  }
+
+  void _removeNewImage(int index) {
+    setState(() {
+      _imageBytesList.removeAt(index);
+      _imageNamesList.removeAt(index);
+    });
+  }
+
+  void _removeExistingImage(int index) {
+    setState(() {
+      _existingImageUrls.removeAt(index);
+    });
   }
 
   @override
@@ -193,7 +217,7 @@ class _PetFormPageState extends State<PetFormPage> {
             Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                'Imagen (opcional)',
+                'Imágenes (hasta 5)',
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.grey[800],
@@ -202,46 +226,83 @@ class _PetFormPageState extends State<PetFormPage> {
               ),
             ),
             const SizedBox(height: 8),
-            Container(
-              height: 180,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey[300]!),
-                color: Colors.grey[100],
+            // Grid of existing images
+            if (_existingImageUrls.isNotEmpty)
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: _existingImageUrls.asMap().entries.map((entry) {
+                  return Stack(
+                    children: [
+                      Container(
+                        width: 100,
+                        height: 100,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.grey[300]!),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.network(entry.value, fit: BoxFit.cover),
+                        ),
+                      ),
+                      Positioned(
+                        top: 0,
+                        right: 0,
+                        child: IconButton(
+                          icon: const Icon(Icons.close, color: Colors.red, size: 20),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                          onPressed: () => _removeExistingImage(entry.key),
+                        ),
+                      ),
+                    ],
+                  );
+                }).toList(),
               ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: _imageBytes != null
-                    ? Image.memory(_imageBytes!, fit: BoxFit.cover)
-                    : (_existingImageUrl != null && _existingImageUrl!.isNotEmpty)
-                        ? Image.network(_existingImageUrl!, fit: BoxFit.cover)
-                        : const Center(
-                            child: Icon(Icons.photo, size: 48, color: Colors.grey),
-                          ),
+            // Grid of new images
+            if (_imageBytesList.isNotEmpty)
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: _imageBytesList.asMap().entries.map((entry) {
+                  return Stack(
+                    children: [
+                      Container(
+                        width: 100,
+                        height: 100,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.grey[300]!),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.memory(entry.value, fit: BoxFit.cover),
+                        ),
+                      ),
+                      Positioned(
+                        top: 0,
+                        right: 0,
+                        child: IconButton(
+                          icon: const Icon(Icons.close, color: Colors.red, size: 20),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                          onPressed: () => _removeNewImage(entry.key),
+                        ),
+                      ),
+                    ],
+                  );
+                }).toList(),
               ),
-            ),
             const SizedBox(height: 8),
-            Row(
-              children: [
-                ElevatedButton.icon(
-                  onPressed: _pickImage,
-                  icon: const Icon(Icons.photo_library),
-                  label: const Text('Seleccionar imagen'),
-                ),
-                const SizedBox(width: 12),
-                if (_imageBytes != null || (_existingImageUrl?.isNotEmpty ?? false))
-                  TextButton(
-                    onPressed: () {
-                      setState(() {
-                        _imageBytes = null;
-                        _pickedImageName = null;
-                        _existingImageUrl = null;
-                      });
-                    },
-                    child: const Text('Quitar'),
-                  ),
-              ],
+            ElevatedButton.icon(
+              onPressed: (_existingImageUrls.length + _imageBytesList.length < maxImages)
+                  ? _pickImage
+                  : null,
+              icon: const Icon(Icons.add_photo_alternate),
+              label: Text(
+                'Agregar imagen (${_existingImageUrls.length + _imageBytesList.length}/$maxImages)',
+              ),
             ),
             const SizedBox(height: 20),
             ElevatedButton(

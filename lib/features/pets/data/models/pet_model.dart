@@ -23,8 +23,8 @@ class PetModel {
   @JsonKey(name: 'description')
   final String description;
 
-  @JsonKey(name: 'image_url')
-  final String? imageUrl;
+  @JsonKey(name: 'image_urls')
+  final List<String> imageUrls;
 
   @JsonKey(name: 'shelter_id')
   final String shelterId;
@@ -42,7 +42,7 @@ class PetModel {
     required this.breed,
     required this.age,
     required this.description,
-    this.imageUrl,
+    this.imageUrls = const [],
     required this.shelterId,
     this.adopted = false,
     required this.createdAt,
@@ -60,7 +60,7 @@ class PetModel {
     String? breed,
     int? age,
     String? description,
-    String? imageUrl,
+    List<String>? imageUrls,
     String? shelterId,
     bool? adopted,
     String? createdAt,
@@ -72,7 +72,7 @@ class PetModel {
       breed: breed ?? this.breed,
       age: age ?? this.age,
       description: description ?? this.description,
-      imageUrl: imageUrl ?? this.imageUrl,
+      imageUrls: imageUrls ?? this.imageUrls,
       shelterId: shelterId ?? this.shelterId,
       adopted: adopted ?? this.adopted,
       createdAt: createdAt ?? this.createdAt,

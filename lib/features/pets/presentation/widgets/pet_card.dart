@@ -24,13 +24,13 @@ class PetCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Imagen
-            if (pet.imageUrl != null)
+            if (pet.imageUrls.isNotEmpty)
               ClipRRect(
                 borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(12),
                 ),
                 child: CachedNetworkImage(
-                  imageUrl: pet.imageUrl!,
+                  imageUrl: pet.imageUrls.first,
                   height: 180,
                   width: double.infinity,
                   fit: BoxFit.cover,
