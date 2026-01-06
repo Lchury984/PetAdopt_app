@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:petadopt_prueba2_app/features/auth/presentation/pages/register_page.dart';
 import 'package:petadopt_prueba2_app/core/extensions/build_context_extensions.dart';
 import 'package:petadopt_prueba2_app/core/constants/app_routes.dart';
+import 'package:petadopt_prueba2_app/core/widgets/app_back_button.dart';
 
 /// Página para seleccionar el rol (adoptante o refugio)
 class SelectRolePage extends StatelessWidget {
@@ -20,6 +21,9 @@ class SelectRolePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Elige tu rol'),
+        leading: const AppBackButton(
+          fallbackRoute: AppRoutes.login,
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(24),

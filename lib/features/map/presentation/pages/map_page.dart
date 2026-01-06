@@ -4,6 +4,8 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:petadopt_prueba2_app/features/map/presentation/cubit/map_cubit.dart';
 import 'package:petadopt_prueba2_app/features/map/presentation/cubit/map_state.dart';
+import 'package:petadopt_prueba2_app/core/constants/app_routes.dart';
+import 'package:petadopt_prueba2_app/core/widgets/app_back_button.dart';
 
 class MapPage extends StatefulWidget {
   const MapPage({Key? key}) : super(key: key);
@@ -22,7 +24,12 @@ class _MapPageState extends State<MapPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Refugios cercanos')),
+      appBar: AppBar(
+        title: const Text('Refugios cercanos'),
+        leading: const AppBackButton(
+          fallbackRoute: AppRoutes.adopterHome,
+        ),
+      ),
       body: BlocBuilder<MapCubit, MapState>(
         builder: (context, state) {
           if (state is MapLoading || state is MapInitial) {

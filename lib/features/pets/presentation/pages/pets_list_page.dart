@@ -5,6 +5,7 @@ import 'package:petadopt_prueba2_app/features/pets/presentation/cubit/pets_state
 import 'package:petadopt_prueba2_app/features/pets/presentation/widgets/pet_card.dart';
 import 'package:petadopt_prueba2_app/core/constants/app_routes.dart';
 import 'package:petadopt_prueba2_app/core/extensions/build_context_extensions.dart';
+import 'package:petadopt_prueba2_app/core/widgets/app_back_button.dart';
 
 class PetsListPage extends StatefulWidget {
   const PetsListPage({Key? key}) : super(key: key);
@@ -25,6 +26,9 @@ class _PetsListPageState extends State<PetsListPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Mascotas disponibles'),
+        leading: const AppBackButton(
+          fallbackRoute: AppRoutes.adopterHome,
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.map),

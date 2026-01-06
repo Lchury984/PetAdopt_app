@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:petadopt_prueba2_app/features/pets/domain/entities/pet_entity.dart';
 import 'package:petadopt_prueba2_app/features/pets/domain/repositories/pets_repository.dart';
 
@@ -64,5 +66,16 @@ class DeletePetUseCase {
 
   Future<void> call(String petId) async {
     return await repository.deletePet(petId);
+  }
+}
+
+/// UseCase para subir imagen de mascota y obtener URL
+class UploadPetImageUseCase {
+  final PetsRepository repository;
+
+  UploadPetImageUseCase({required this.repository});
+
+  Future<String> call({required Uint8List bytes, required String fileName}) async {
+    return await repository.uploadPetImage(bytes: bytes, fileName: fileName);
   }
 }

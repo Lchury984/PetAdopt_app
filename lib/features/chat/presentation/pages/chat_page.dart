@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/chat_provider.dart';
 import '../widgets/chat_bubble.dart';
+import 'package:petadopt_prueba2_app/core/constants/app_routes.dart';
+import 'package:petadopt_prueba2_app/core/widgets/app_back_button.dart';
 
 /// Página del chat con Gemini
 class ChatPage extends ConsumerStatefulWidget {
@@ -63,6 +65,9 @@ class _ChatPageState extends ConsumerState<ChatPage> {
         title: const Text('PetAdopt - Asistente IA'),
         centerTitle: true,
         elevation: 2,
+        leading: const AppBackButton(
+          fallbackRoute: AppRoutes.adopterHome,
+        ),
         actions: [
           if (messages.isNotEmpty)
             IconButton(

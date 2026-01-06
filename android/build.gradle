@@ -5,6 +5,13 @@ allprojects {
     }
 }
 
+// Propagar versiones de SDK a plugins que lean rootProject.ext
+ext {
+    compileSdkVersion = 35
+    targetSdkVersion = 34
+    minSdkVersion = 23
+}
+
 rootProject.buildDir = "../build"
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
@@ -12,6 +19,8 @@ subprojects {
 subprojects {
     project.evaluationDependsOn(":app")
 }
+
+// Configuración global adicional se gestiona vía local.properties y app/build.gradle
 
 tasks.register("clean", Delete) {
     delete rootProject.buildDir

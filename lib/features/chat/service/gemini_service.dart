@@ -1,17 +1,18 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:petadopt_prueba2_app/core/constants/app_constants.dart';
 
 /// Servicio para interactuar con la API de Gemini
 class GeminiService {
   late GenerativeModel _model;
 
   GeminiService() {
-    final apiKey = dotenv.env['GEMINI_API_KEY'];
-    if (apiKey == null || apiKey.isEmpty) {
-      throw Exception('GEMINI_API_KEY no configurada en .env');
+    // Preferir --dart-define, fallback a .env
+    final apiKey = AppConstants.geminiApiKey;
+    if (apiKey.isEmpty) {
+      throw Exception('GEMINI_API_KEY no configurada. Usa --dart-define GEMINI_API_KEY=tu-clave o configura en .env');
     }
     _model = GenerativeModel(
-      model: 'gemini-pro',
+      model: 'gemini-2.0-flash',
       apiKey: apiKey,
     );
   }

@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:petadopt_prueba2_app/features/pets/domain/entities/pet_entity.dart';
 import 'package:petadopt_prueba2_app/features/pets/domain/repositories/pets_repository.dart';
 import 'package:petadopt_prueba2_app/features/pets/data/datasources/pets_remote_datasource.dart';
@@ -105,6 +107,11 @@ class PetsRepositoryImpl implements PetsRepository {
   @override
   Future<void> deletePet(String petId) async {
     await remoteDataSource.deletePet(petId);
+  }
+
+  @override
+  Future<String> uploadPetImage({required Uint8List bytes, required String fileName}) {
+    return remoteDataSource.uploadPetImage(bytes: bytes, fileName: fileName);
   }
 
   // Helper privado para convertir entity a model

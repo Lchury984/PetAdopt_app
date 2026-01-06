@@ -10,6 +10,7 @@ import 'package:petadopt_prueba2_app/features/adoption/presentation/cubit/adopti
 import 'package:petadopt_prueba2_app/features/adoption/presentation/cubit/adoption_state.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:petadopt_prueba2_app/core/extensions/build_context_extensions.dart';
+import 'package:petadopt_prueba2_app/core/widgets/app_back_button.dart';
 
 /// Página principal para refugios (Panel de administrador)
 class ShelterHomePage extends StatefulWidget {
@@ -29,6 +30,10 @@ class _ShelterHomePageState extends State<ShelterHomePage> {
     context.read<AdoptionCubit>().getShelterRequests(widget.shelterId);
   }
 
+  void _logout() {
+    context.read<AuthCubit>().logout();
+  }
+
   @override
   Widget build(BuildContext context) {
     final authState = context.watch<AuthCubit>().state;
@@ -38,10 +43,32 @@ class _ShelterHomePageState extends State<ShelterHomePage> {
       shelterName = authState.fullName;
     }
 
-    return ShelterScaffold(
-      currentRoute: AppRoutes.shelterHome,
-      body: SingleChildScrollView(
-        child: Column(
+    return BlocListener<AuthCubit, AuthState>(
+      listener: (context, state) {
+        if (state is AuthLoggedOut || state is AuthUnauthenticated) {
+          Navigator.of(context).pushNamedAndRemoveUntil(
+            AppRoutes.login,
+            (route) => false,
+          );
+        }
+      },
+      child: ShelterScaffold(
+        currentRoute: AppRoutes.shelterHome,
+        appBar: AppBar(
+          title: const Text('Inicio'),
+          leading: const AppBackButton(
+            fallbackRoute: AppRoutes.login,
+          ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.logout),
+              tooltip: 'Cerrar sesión',
+              onPressed: _logout,
+            ),
+          ],
+        ),
+        body: SingleChildScrollView(
+          child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header
@@ -257,7 +284,8 @@ class _ShelterHomePageState extends State<ShelterHomePage> {
           ],
         ),
       ),
-    );
+    ),
+  );
   }
 
   String _getPetsCount(BuildContext context) {

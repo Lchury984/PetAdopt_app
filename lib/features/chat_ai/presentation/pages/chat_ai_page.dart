@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:petadopt_prueba2_app/features/chat_ai/presentation/cubit/chat_ai_cubit.dart';
 import 'package:petadopt_prueba2_app/features/chat_ai/presentation/cubit/chat_ai_state.dart';
+import 'package:petadopt_prueba2_app/core/constants/app_routes.dart';
+import 'package:petadopt_prueba2_app/core/widgets/app_back_button.dart';
 
 /// Página de chat con IA (Gemini)
 class ChatAiPage extends StatefulWidget {
@@ -52,6 +54,9 @@ class _ChatAiPageState extends State<ChatAiPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Chat con IA'),
+        leading: const AppBackButton(
+          fallbackRoute: AppRoutes.adopterHome,
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.delete_sweep),

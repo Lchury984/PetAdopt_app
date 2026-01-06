@@ -38,21 +38,42 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String fullName,
     required String role,
   }) async {
-    // Registrar en Supabase Auth
-    final response = await supabaseClient.auth.signUp(
-      email: email,
-      password: password,
-    );
+    try {
+      // Registrar en Supabase Auth con metadata
+      final response = await supabaseClient.auth.signUp(
+        email: email,
+        password: password,
+        data: {
+          'full_name': fullName,
+          'role': role,
+        },
+      );
 
-    if (response.user != null) {
-      // Guardar información adicional en la tabla users
-      await supabaseClient.from('users').insert({
-        'id': response.user!.id,
-        'email': email,
-        'full_name': fullName,
-        'role': role,
-        'created_at': DateTime.now().toIso8601String(),
-      });
+      // Siempre intentar guardar el perfil de usuario (con o sin sesión)
+      if (response.user != null) {
+        try {
+          await supabaseClient.from('users').upsert(
+            {
+              'id': response.user!.id,
+              'email': email,
+              'full_name': fullName,
+              'role': role,
+              'created_at': DateTime.now().toIso8601String(),
+            },
+            onConflict: 'id',
+            ignoreDuplicates: true,
+          );
+        } catch (insertError) {
+          // Si falla por RLS/sesión, hacer log pero no fallar (el trigger en BD debería crearlo)
+          print('⚠️ No se pudo insertar perfil directamente. Se usará trigger de BD. Error: $insertError');
+        }
+      }
+    } catch (e) {
+      final msg = e.toString();
+      if (msg.contains('429') || msg.toLowerCase().contains('too many requests')) {
+        throw Exception('Demasiadas solicitudes de registro. Intenta de nuevo en un minuto.');
+      }
+      throw Exception('No se pudo registrar: $msg');
     }
   }
 

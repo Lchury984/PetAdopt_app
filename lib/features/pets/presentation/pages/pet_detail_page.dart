@@ -6,6 +6,8 @@ import 'package:petadopt_prueba2_app/features/adoption/presentation/cubit/adopti
 import 'package:petadopt_prueba2_app/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:petadopt_prueba2_app/features/auth/presentation/cubit/auth_state.dart';
 import 'package:petadopt_prueba2_app/core/extensions/build_context_extensions.dart';
+import 'package:petadopt_prueba2_app/core/widgets/app_back_button.dart';
+import 'package:petadopt_prueba2_app/core/constants/app_routes.dart';
 
 class PetDetailPage extends StatelessWidget {
   final PetEntity pet;
@@ -32,7 +34,12 @@ class PetDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(pet.name)),
+      appBar: AppBar(
+        title: Text(pet.name),
+        leading: const AppBackButton(
+          fallbackRoute: AppRoutes.adopterHome,
+        ),
+      ),
       body: BlocListener<AdoptionCubit, AdoptionState>(
         listener: (context, state) {
           if (state is AdoptionRequestCreated) {

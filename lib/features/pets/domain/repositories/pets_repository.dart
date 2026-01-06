@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:petadopt_prueba2_app/features/pets/domain/entities/pet_entity.dart';
 
 abstract class PetsRepository {
@@ -18,4 +20,7 @@ abstract class PetsRepository {
 
   /// Eliminar mascota
   Future<void> deletePet(String petId);
+
+  /// Subir imagen de mascota y devolver URL pública
+  Future<String> uploadPetImage({required Uint8List bytes, required String fileName});
 }

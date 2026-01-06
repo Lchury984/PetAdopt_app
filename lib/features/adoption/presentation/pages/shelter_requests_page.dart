@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:petadopt_prueba2_app/features/adoption/presentation/cubit/adoption_cubit.dart';
 import 'package:petadopt_prueba2_app/features/adoption/presentation/cubit/adoption_state.dart';
+import 'package:petadopt_prueba2_app/core/constants/app_routes.dart';
+import 'package:petadopt_prueba2_app/core/widgets/app_back_button.dart';
 
 class ShelterRequestsPage extends StatefulWidget {
   final String shelterId;
@@ -22,7 +24,12 @@ class _ShelterRequestsPageState extends State<ShelterRequestsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Solicitudes recibidas')),
+      appBar: AppBar(
+        title: const Text('Solicitudes recibidas'),
+        leading: const AppBackButton(
+          fallbackRoute: AppRoutes.shelterHome,
+        ),
+      ),
       body: BlocBuilder<AdoptionCubit, AdoptionState>(
         builder: (context, state) {
           if (state is AdoptionLoading || state is AdoptionInitial) {

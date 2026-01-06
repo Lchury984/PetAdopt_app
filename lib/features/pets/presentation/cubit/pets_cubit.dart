@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:petadopt_prueba2_app/features/pets/domain/usecases/pets_usecases.dart';
 import 'package:petadopt_prueba2_app/features/pets/presentation/cubit/pets_state.dart';
@@ -11,6 +13,7 @@ class PetsCubit extends Cubit<PetsState> {
   final CreatePetUseCase createPetUseCase;
   final UpdatePetUseCase updatePetUseCase;
   final DeletePetUseCase deletePetUseCase;
+  final UploadPetImageUseCase uploadPetImageUseCase;
 
   PetsCubit({
     required this.getAllPetsUseCase,
@@ -19,6 +22,7 @@ class PetsCubit extends Cubit<PetsState> {
     required this.createPetUseCase,
     required this.updatePetUseCase,
     required this.deletePetUseCase,
+    required this.uploadPetImageUseCase,
   }) : super(const PetsInitial());
 
   /// Obtener todas las mascotas disponibles
@@ -79,5 +83,10 @@ class PetsCubit extends Cubit<PetsState> {
     }).catchError((error) {
       emit(PetsError(message: error.toString()));
     });
+  }
+
+  /// Subir imagen de mascota y devolver URL
+  Future<String> uploadPetImage({required Uint8List bytes, required String fileName}) {
+    return uploadPetImageUseCase(bytes: bytes, fileName: fileName);
   }
 }

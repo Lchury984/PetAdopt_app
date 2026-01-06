@@ -18,9 +18,7 @@ import 'package:petadopt_prueba2_app/features/auth/presentation/pages/select_rol
 import 'package:petadopt_prueba2_app/features/auth/presentation/pages/register_page.dart';
 
 // Pets
-import 'package:petadopt_prueba2_app/features/pets/presentation/pages/pets_list_page.dart';
 import 'package:petadopt_prueba2_app/features/pets/presentation/pages/pet_detail_page.dart';
-import 'package:petadopt_prueba2_app/features/pets/presentation/pages/manage_pets_page.dart';
 import 'package:petadopt_prueba2_app/features/pets/presentation/pages/pet_form_page.dart';
 import 'package:petadopt_prueba2_app/features/pets/presentation/pages/adopter_home_page.dart';
 import 'package:petadopt_prueba2_app/features/pets/presentation/pages/shelter_home_page.dart';

@@ -8,6 +8,7 @@ import 'package:petadopt_prueba2_app/features/pets/presentation/cubit/pets_cubit
 import 'package:petadopt_prueba2_app/features/pets/presentation/cubit/pets_state.dart';
 import 'package:petadopt_prueba2_app/features/pets/presentation/widgets/pet_card.dart';
 import 'package:petadopt_prueba2_app/core/extensions/build_context_extensions.dart';
+import 'package:petadopt_prueba2_app/core/widgets/app_back_button.dart';
 
 /// Página principal para adoptantes
 class AdopterHomePage extends StatefulWidget {
@@ -34,6 +35,10 @@ class _AdopterHomePageState extends State<AdopterHomePage> {
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  void _logout() {
+    context.read<AuthCubit>().logout();
   }
 
   List<dynamic> _filterPets(List<dynamic> pets) {
@@ -68,11 +73,33 @@ class _AdopterHomePageState extends State<AdopterHomePage> {
       userName = authState.fullName;
     }
 
-    return AdopterScaffold(
-      currentRoute: AppRoutes.adopterHome,
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+    return BlocListener<AuthCubit, AuthState>(
+      listener: (context, state) {
+        if (state is AuthLoggedOut || state is AuthUnauthenticated) {
+          Navigator.of(context).pushNamedAndRemoveUntil(
+            AppRoutes.login,
+            (route) => false,
+          );
+        }
+      },
+      child: AdopterScaffold(
+        currentRoute: AppRoutes.adopterHome,
+        appBar: AppBar(
+          title: const Text('Inicio'),
+          leading: const AppBackButton(
+            fallbackRoute: AppRoutes.login,
+          ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.logout),
+              onPressed: _logout,
+              tooltip: 'Cerrar sesión',
+            ),
+          ],
+        ),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
           // Header con saludo
           Container(
             width: double.infinity,
@@ -247,7 +274,8 @@ class _AdopterHomePageState extends State<AdopterHomePage> {
           ),
         ],
       ),
-    );
+    ),
+  );
   }
 }
 

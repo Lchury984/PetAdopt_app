@@ -4,6 +4,7 @@ import 'package:petadopt_prueba2_app/features/auth/presentation/cubit/auth_cubit
 import 'package:petadopt_prueba2_app/features/auth/presentation/cubit/auth_state.dart';
 import 'package:petadopt_prueba2_app/core/extensions/build_context_extensions.dart';
 import 'package:petadopt_prueba2_app/core/constants/app_routes.dart';
+import 'package:petadopt_prueba2_app/core/widgets/app_back_button.dart';
 
 /// Página de registro
 class RegisterPage extends StatefulWidget {
@@ -72,6 +73,9 @@ class _RegisterPageState extends State<RegisterPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Crear Cuenta'),
+        leading: const AppBackButton(
+          fallbackRoute: AppRoutes.selectRole,
+        ),
       ),
       body: BlocListener<AuthCubit, AuthState>(
         listener: (context, state) {

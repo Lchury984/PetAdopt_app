@@ -4,6 +4,7 @@ import 'package:petadopt_prueba2_app/features/auth/presentation/cubit/auth_cubit
 import 'package:petadopt_prueba2_app/features/auth/presentation/cubit/auth_state.dart';
 import 'package:petadopt_prueba2_app/core/extensions/build_context_extensions.dart';
 import 'package:petadopt_prueba2_app/core/constants/app_routes.dart';
+import 'package:petadopt_prueba2_app/core/widgets/app_back_button.dart';
 
 /// Página de login
 class LoginPage extends StatefulWidget {
@@ -40,6 +41,12 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Iniciar sesión'),
+        leading: const AppBackButton(
+          fallbackRoute: AppRoutes.selectRole,
+        ),
+      ),
       body: BlocListener<AuthCubit, AuthState>(
         listener: (context, state) {
           if (state is AuthAuthenticated) {

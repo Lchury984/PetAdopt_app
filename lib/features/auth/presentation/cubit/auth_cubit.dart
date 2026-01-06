@@ -36,7 +36,12 @@ class AuthCubit extends Cubit<AuthState> {
     ).then((_) {
       emit(const AuthRegistered());
     }).catchError((error) {
-      emit(AuthError(message: error.toString()));
+      final msg = error.toString();
+      if (msg.contains('Demasiadas solicitudes') || msg.contains('Too Many Requests')) {
+        emit(const AuthError(message: 'Has alcanzado el límite de intentos. Espera un minuto y vuelve a intentar.'));
+      } else {
+        emit(AuthError(message: msg));
+      }
     });
   }
 

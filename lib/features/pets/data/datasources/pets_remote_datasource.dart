@@ -1,5 +1,8 @@
+import 'dart:typed_data';
+
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:petadopt_prueba2_app/features/pets/data/models/pet_model.dart';
+import 'package:petadopt_prueba2_app/core/constants/app_constants.dart';
 
 abstract class PetsRemoteDataSource {
   /// Obtener todas las mascotas disponibles (para adoptantes)
@@ -19,6 +22,9 @@ abstract class PetsRemoteDataSource {
 
   /// Eliminar mascota (solo refugios)
   Future<void> deletePet(String petId);
+
+  /// Subir imagen a almacenamiento y devolver URL pública
+  Future<String> uploadPetImage({required Uint8List bytes, required String fileName});
 }
 
 /// Implementación de PetsRemoteDataSource usando Supabase
@@ -87,5 +93,18 @@ class PetsRemoteDataSourceImpl implements PetsRemoteDataSource {
   @override
   Future<void> deletePet(String petId) async {
     await supabaseClient.from('pets').delete().eq('id', petId);
+  }
+
+  @override
+  Future<String> uploadPetImage({required Uint8List bytes, required String fileName}) async {
+    final path = 'pets/$fileName';
+
+    await supabaseClient.storage
+        .from(AppConstants.petImagesBucket)
+        .uploadBinary(path, bytes, fileOptions: const FileOptions(upsert: true));
+
+    return supabaseClient.storage
+        .from(AppConstants.petImagesBucket)
+        .getPublicUrl(path);
   }
 }

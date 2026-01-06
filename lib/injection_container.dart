@@ -6,18 +6,21 @@ import 'package:petadopt_prueba2_app/core/constants/app_constants.dart';
 import 'package:petadopt_prueba2_app/features/auth/data/datasources/auth_remote_datasource.dart';
 import 'package:petadopt_prueba2_app/features/auth/data/datasources/auth_local_datasource.dart';
 import 'package:petadopt_prueba2_app/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:petadopt_prueba2_app/features/auth/domain/repositories/auth_repository.dart';
 import 'package:petadopt_prueba2_app/features/auth/domain/usecases/auth_usecases.dart';
 import 'package:petadopt_prueba2_app/features/auth/presentation/cubit/auth_cubit.dart';
 
 // Pets
 import 'package:petadopt_prueba2_app/features/pets/data/datasources/pets_remote_datasource.dart';
 import 'package:petadopt_prueba2_app/features/pets/data/repositories/pets_repository_impl.dart';
+import 'package:petadopt_prueba2_app/features/pets/domain/repositories/pets_repository.dart';
 import 'package:petadopt_prueba2_app/features/pets/domain/usecases/pets_usecases.dart';
 import 'package:petadopt_prueba2_app/features/pets/presentation/cubit/pets_cubit.dart';
 
 // Adoption
 import 'package:petadopt_prueba2_app/features/adoption/data/datasources/adoption_remote_datasource.dart';
 import 'package:petadopt_prueba2_app/features/adoption/data/repositories/adoption_repository_impl.dart';
+import 'package:petadopt_prueba2_app/features/adoption/domain/repositories/adoption_repository.dart';
 import 'package:petadopt_prueba2_app/features/adoption/domain/usecases/adoption_usecases.dart';
 import 'package:petadopt_prueba2_app/features/adoption/presentation/cubit/adoption_cubit.dart';
 
@@ -25,12 +28,14 @@ import 'package:petadopt_prueba2_app/features/adoption/presentation/cubit/adopti
 import 'package:petadopt_prueba2_app/features/chat_ai/data/datasources/chat_ai_remote_datasource.dart';
 import 'package:petadopt_prueba2_app/features/chat_ai/data/datasources/chat_ai_local_datasource.dart';
 import 'package:petadopt_prueba2_app/features/chat_ai/data/repositories/chat_ai_repository_impl.dart';
+import 'package:petadopt_prueba2_app/features/chat_ai/domain/repositories/chat_ai_repository.dart';
 import 'package:petadopt_prueba2_app/features/chat_ai/domain/usecases/chat_ai_usecases.dart';
 import 'package:petadopt_prueba2_app/features/chat_ai/presentation/cubit/chat_ai_cubit.dart';
 
 // Map
 import 'package:petadopt_prueba2_app/features/map/data/datasources/map_local_datasource.dart';
 import 'package:petadopt_prueba2_app/features/map/data/repositories/map_repository_impl.dart';
+import 'package:petadopt_prueba2_app/features/map/domain/repositories/map_repository.dart';
 import 'package:petadopt_prueba2_app/features/map/domain/usecases/map_usecases.dart';
 import 'package:petadopt_prueba2_app/features/map/presentation/cubit/map_cubit.dart';
 
@@ -49,18 +54,18 @@ Future<void> initDependencies() async {
   );
 
   // Auth repository
-  sl.registerLazySingleton(() => AuthRepositoryImpl(
+  sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(
         remoteDataSource: sl(),
         localDataSource: sl(),
       ));
 
   // Auth usecases
-  sl.registerLazySingleton(() => RegisterUseCase(repository: sl()));
-  sl.registerLazySingleton(() => LoginUseCase(repository: sl()));
-  sl.registerLazySingleton(() => LogoutUseCase(repository: sl()));
-  sl.registerLazySingleton(() => GetCurrentUserUseCase(repository: sl()));
-  sl.registerLazySingleton(() => GetUserRoleUseCase(repository: sl()));
-  sl.registerLazySingleton(() => CheckAuthenticationUseCase(repository: sl()));
+  sl.registerLazySingleton(() => RegisterUseCase(repository: sl<AuthRepository>()));
+  sl.registerLazySingleton(() => LoginUseCase(repository: sl<AuthRepository>()));
+  sl.registerLazySingleton(() => LogoutUseCase(repository: sl<AuthRepository>()));
+  sl.registerLazySingleton(() => GetCurrentUserUseCase(repository: sl<AuthRepository>()));
+  sl.registerLazySingleton(() => GetUserRoleUseCase(repository: sl<AuthRepository>()));
+  sl.registerLazySingleton(() => CheckAuthenticationUseCase(repository: sl<AuthRepository>()));
 
   // Auth cubit
   sl.registerFactory(() => AuthCubit(
@@ -78,15 +83,17 @@ Future<void> initDependencies() async {
   );
 
   // Pets repository
-  sl.registerLazySingleton(() => PetsRepositoryImpl(remoteDataSource: sl()));
+  sl.registerLazySingleton<PetsRepository>(
+      () => PetsRepositoryImpl(remoteDataSource: sl()));
 
   // Pets usecases
-  sl.registerLazySingleton(() => GetAllPetsUseCase(repository: sl()));
-  sl.registerLazySingleton(() => GetShelterPetsUseCase(repository: sl()));
-  sl.registerLazySingleton(() => GetPetByIdUseCase(repository: sl()));
-  sl.registerLazySingleton(() => CreatePetUseCase(repository: sl()));
-  sl.registerLazySingleton(() => UpdatePetUseCase(repository: sl()));
-  sl.registerLazySingleton(() => DeletePetUseCase(repository: sl()));
+  sl.registerLazySingleton(() => GetAllPetsUseCase(repository: sl<PetsRepository>()));
+  sl.registerLazySingleton(() => GetShelterPetsUseCase(repository: sl<PetsRepository>()));
+  sl.registerLazySingleton(() => GetPetByIdUseCase(repository: sl<PetsRepository>()));
+  sl.registerLazySingleton(() => CreatePetUseCase(repository: sl<PetsRepository>()));
+  sl.registerLazySingleton(() => UpdatePetUseCase(repository: sl<PetsRepository>()));
+  sl.registerLazySingleton(() => DeletePetUseCase(repository: sl<PetsRepository>()));
+  sl.registerLazySingleton(() => UploadPetImageUseCase(repository: sl<PetsRepository>()));
 
   // Pets cubit
   sl.registerFactory(() => PetsCubit(
@@ -96,6 +103,7 @@ Future<void> initDependencies() async {
         createPetUseCase: sl(),
         updatePetUseCase: sl(),
         deletePetUseCase: sl(),
+        uploadPetImageUseCase: sl(),
       ));
 
   // Adoption datasources
@@ -104,13 +112,14 @@ Future<void> initDependencies() async {
   );
 
   // Adoption repository
-  sl.registerLazySingleton(() => AdoptionRepositoryImpl(remoteDataSource: sl()));
+  sl.registerLazySingleton<AdoptionRepository>(
+      () => AdoptionRepositoryImpl(remoteDataSource: sl()));
 
   // Adoption usecases
-  sl.registerLazySingleton(() => CreateAdoptionRequestUseCase(repository: sl()));
-  sl.registerLazySingleton(() => GetAdopterRequestsUseCase(repository: sl()));
-  sl.registerLazySingleton(() => GetShelterRequestsUseCase(repository: sl()));
-  sl.registerLazySingleton(() => UpdateAdoptionRequestStatusUseCase(repository: sl()));
+  sl.registerLazySingleton(() => CreateAdoptionRequestUseCase(repository: sl<AdoptionRepository>()));
+  sl.registerLazySingleton(() => GetAdopterRequestsUseCase(repository: sl<AdoptionRepository>()));
+  sl.registerLazySingleton(() => GetShelterRequestsUseCase(repository: sl<AdoptionRepository>()));
+  sl.registerLazySingleton(() => UpdateAdoptionRequestStatusUseCase(repository: sl<AdoptionRepository>()));
 
   // Adoption cubit
   sl.registerFactory(() => AdoptionCubit(
@@ -129,16 +138,16 @@ Future<void> initDependencies() async {
   );
 
   // Chat AI repository
-  sl.registerLazySingleton(() => ChatAiRepositoryImpl(
+  sl.registerLazySingleton<ChatAiRepository>(() => ChatAiRepositoryImpl(
         remoteDataSource: sl(),
         localDataSource: sl(),
       ));
 
   // Chat AI usecases
-  sl.registerLazySingleton(() => SendMessageUseCase(repository: sl()));
-  sl.registerLazySingleton(() => GetConversationHistoryUseCase(repository: sl()));
-  sl.registerLazySingleton(() => SaveConversationHistoryUseCase(repository: sl()));
-  sl.registerLazySingleton(() => ClearConversationHistoryUseCase(repository: sl()));
+  sl.registerLazySingleton(() => SendMessageUseCase(repository: sl<ChatAiRepository>()));
+  sl.registerLazySingleton(() => GetConversationHistoryUseCase(repository: sl<ChatAiRepository>()));
+  sl.registerLazySingleton(() => SaveConversationHistoryUseCase(repository: sl<ChatAiRepository>()));
+  sl.registerLazySingleton(() => ClearConversationHistoryUseCase(repository: sl<ChatAiRepository>()));
 
   // Chat AI cubit
   sl.registerFactory(() => ChatAiCubit(
@@ -152,11 +161,12 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton<MapLocalDataSource>(() => MapLocalDataSourceImpl());
 
   // Map repository
-  sl.registerLazySingleton(() => MapRepositoryImpl(localDataSource: sl()));
+  sl.registerLazySingleton<MapRepository>(
+      () => MapRepositoryImpl(localDataSource: sl()));
 
   // Map usecases
-  sl.registerLazySingleton(() => GetCurrentLocationUseCase(repository: sl()));
-  sl.registerLazySingleton(() => GetShelterPinsUseCase(repository: sl()));
+  sl.registerLazySingleton(() => GetCurrentLocationUseCase(repository: sl<MapRepository>()));
+  sl.registerLazySingleton(() => GetShelterPinsUseCase(repository: sl<MapRepository>()));
 
   // Map cubit
   sl.registerFactory(() => MapCubit(

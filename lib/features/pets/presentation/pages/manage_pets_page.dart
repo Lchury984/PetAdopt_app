@@ -4,6 +4,8 @@ import 'package:petadopt_prueba2_app/features/pets/presentation/cubit/pets_cubit
 import 'package:petadopt_prueba2_app/features/pets/presentation/cubit/pets_state.dart';
 import 'package:petadopt_prueba2_app/features/pets/presentation/pages/pet_form_page.dart';
 import 'package:petadopt_prueba2_app/core/extensions/build_context_extensions.dart';
+import 'package:petadopt_prueba2_app/core/constants/app_routes.dart';
+import 'package:petadopt_prueba2_app/core/widgets/app_back_button.dart';
 
 class ManagePetsPage extends StatefulWidget {
   final String shelterId;
@@ -37,7 +39,12 @@ class _ManagePetsPageState extends State<ManagePetsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Gestionar mascotas')),
+      appBar: AppBar(
+        title: const Text('Gestionar mascotas'),
+        leading: const AppBackButton(
+          fallbackRoute: AppRoutes.shelterHome,
+        ),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _openForm(),
         child: const Icon(Icons.add),
