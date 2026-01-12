@@ -28,7 +28,7 @@ class ShelterScaffold extends StatelessWidget {
         return 1;
       case AppRoutes.shelterRequests:
         return 2;
-      case 'profile':
+      case AppRoutes.profile:
         return 3;
       default:
         return 0;
@@ -48,7 +48,7 @@ class ShelterScaffold extends StatelessWidget {
         route = AppRoutes.shelterRequests;
         break;
       case 3:
-        route = 'profile';
+        route = AppRoutes.profile;
         break;
     }
 

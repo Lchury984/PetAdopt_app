@@ -1,26 +1,49 @@
-import 'package:petadopt_prueba2_app/features/auth/domain/entities/user_entity.dart';
+import 'package:dartz/dartz.dart';
+import '../../../../core/error/failures.dart';
+import '../entities/user_entity.dart';
 
+/// Repository abstracto (interface) - Domain Layer
+/// Define QUÉ se puede hacer, NO CÓMO
 abstract class AuthRepository {
-  /// Registrar nuevo usuario
-  Future<void> register({
+  /// Login con email y contraseña
+  Future<Either<Failure, UserEntity>> login({
     required String email,
     required String password,
-    required String fullName,
-    required String role,
   });
 
-  /// Login
-  Future<void> login({required String email, required String password});
+  /// Registro de usuario adoptante
+  Future<Either<Failure, UserEntity>> registerAdoptante({
+    required String email,
+    required String password,
+    required String nombre,
+    String? telefono,
+  });
 
-  /// Logout
-  Future<void> logout();
+  /// Registro de usuario refugio
+  Future<Either<Failure, UserEntity>> registerRefugio({
+    required String email,
+    required String password,
+    required String nombre,
+    required String nombreRefugio,
+    required String direccion,
+    required double lat,
+    required double lng,
+    String? telefono,
+    String? descripcion,
+  });
+
+  /// Login con Google (OAuth)
+  Future<Either<Failure, UserEntity>> loginWithGoogle();
+
+  /// Cerrar sesión
+  Future<Either<Failure, void>> logout();
 
   /// Obtener usuario actual
-  Future<UserEntity?> getCurrentUser();
+  Future<Either<Failure, UserEntity?>> getCurrentUser();
 
-  /// Obtener rol del usuario
-  Future<String?> getUserRole();
+  /// Recuperar contraseña
+  Future<Either<Failure, void>> resetPassword({required String email});
 
-  /// Verificar si el usuario está autenticado
-  Future<bool> isAuthenticated();
+  /// Verificar si hay sesión activa
+  Future<bool> isLoggedIn();
 }

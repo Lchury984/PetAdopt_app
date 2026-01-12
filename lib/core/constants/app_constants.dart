@@ -4,17 +4,29 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 class AppConstants {
   // API - Preferir --dart-define en Web, fallback a .env en móviles
   static const String _ddSupabaseUrl = String.fromEnvironment('SUPABASE_URL');
-  static const String _ddSupabaseAnon = String.fromEnvironment('SUPABASE_ANON_KEY');
+  static const String _ddSupabaseAnon =
+      String.fromEnvironment('SUPABASE_ANON_KEY');
   static const String _ddGeminiKey = String.fromEnvironment('GEMINI_API_KEY');
 
-  static String get supabaseUrl =>
-    (_ddSupabaseUrl.isNotEmpty ? _ddSupabaseUrl : (dotenv.env['SUPABASE_URL'] ?? 'https://xzruawmvhiczjqrlurqp.supabase.co'));
+  // Safe access to dotenv variables only if initialized
+  static String _env(String key) {
+    return dotenv.isInitialized ? (dotenv.env[key] ?? '') : '';
+  }
 
-  static String get supabaseKey =>
-    (_ddSupabaseAnon.isNotEmpty ? _ddSupabaseAnon : (dotenv.env['SUPABASE_ANON_KEY'] ?? 'sb_publishable_Fe269s_YDROt06td8CzugA_YjbynHIE'));
+  static String get supabaseUrl => (_ddSupabaseUrl.isNotEmpty
+      ? _ddSupabaseUrl
+      : (_env('SUPABASE_URL').isNotEmpty
+          ? _env('SUPABASE_URL')
+          : 'https://xzruawmvhiczjqrlurqp.supabase.co'));
+
+  static String get supabaseKey => (_ddSupabaseAnon.isNotEmpty
+      ? _ddSupabaseAnon
+      : (_env('SUPABASE_ANON_KEY').isNotEmpty
+          ? _env('SUPABASE_ANON_KEY')
+          : 'sb_publishable_Fe269s_YDROt06td8CzugA_YjbynHIE'));
 
   static String get geminiApiKey =>
-    (_ddGeminiKey.isNotEmpty ? _ddGeminiKey : (dotenv.env['GEMINI_API_KEY'] ?? ''));
+      (_ddGeminiKey.isNotEmpty ? _ddGeminiKey : _env('GEMINI_API_KEY'));
 
   // Database tables
   static const String usersTable = 'users';

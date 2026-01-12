@@ -38,7 +38,8 @@ extension BuildContextExtensions on BuildContext {
 
   /// Reemplazar la ruta actual
   Future<T?> replaceRoute<T>(String routeName, {Object? arguments}) {
-    return Navigator.of(this).pushReplacementNamed(routeName, arguments: arguments);
+    return Navigator.of(this)
+        .pushReplacementNamed(routeName, arguments: arguments);
   }
 
   /// Pop la ruta actual

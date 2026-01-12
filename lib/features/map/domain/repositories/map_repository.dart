@@ -1,9 +1,17 @@
-import 'package:petadopt_prueba2_app/features/map/domain/entities/shelter_pin_entity.dart';
+import 'package:dartz/dartz.dart';
+import '../../../../core/error/failures.dart';
+import '../entities/refugio_map_entity.dart';
+import 'package:geolocator/geolocator.dart';
 
+/// Repository interface para el mapa
 abstract class MapRepository {
-  /// Obtener ubicación actual (lat, lng)
-  Future<(double lat, double lng)> getCurrentLocation();
+  /// Obtener ubicación actual del usuario
+  Future<Either<Failure, Position>> getUserLocation();
 
-  /// Obtener refugios (mock)
-  Future<List<ShelterPinEntity>> getShelterPins();
+  /// Obtener refugios cercanos
+  Future<Either<Failure, List<RefugioMapEntity>>> getNearbyRefugios({
+    required double lat,
+    required double lng,
+    double radiusKm = 50,
+  });
 }

@@ -1,74 +1,125 @@
-import 'package:petadopt_prueba2_app/features/auth/domain/entities/user_entity.dart';
-import 'package:petadopt_prueba2_app/features/auth/domain/repositories/auth_repository.dart';
-import 'package:petadopt_prueba2_app/features/auth/data/datasources/auth_remote_datasource.dart';
-import 'package:petadopt_prueba2_app/features/auth/data/datasources/auth_local_datasource.dart';
+import 'package:dartz/dartz.dart';
+import '../../../../core/error/failures.dart';
+import '../../domain/entities/user_entity.dart';
+import '../../domain/repositories/auth_repository.dart';
+import '../datasources/auth_remote_datasource.dart';
 
-/// Implementación del repositorio de autenticación
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
-  final AuthLocalDataSource localDataSource;
 
-  AuthRepositoryImpl({
-    required this.remoteDataSource,
-    required this.localDataSource,
-  });
+  AuthRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<void> register({
+  Future<Either<Failure, UserEntity>> registerAdoptante({
+    required String nombre,
     required String email,
     required String password,
-    required String fullName,
-    required String role,
+    String? telefono,
   }) async {
-    await remoteDataSource.register(
-      email: email,
-      password: password,
-      fullName: fullName,
-      role: role,
-    );
-    await localDataSource.saveUserRole(role);
-  }
-
-  @override
-  Future<void> login({
-    required String email,
-    required String password,
-  }) async {
-    await remoteDataSource.login(email: email, password: password);
-    final token = await remoteDataSource.getUserToken();
-    if (token != null) {
-      await localDataSource.saveToken(token);
-    }
-  }
-
-  @override
-  Future<void> logout() async {
-    await remoteDataSource.logout();
-    await localDataSource.clearAll();
-  }
-
-  @override
-  Future<UserEntity?> getCurrentUser() async {
-    final user = await remoteDataSource.getCurrentUser();
-    if (user != null) {
-      return UserEntity(
-        id: user.id,
-        email: user.email ?? '',
-        fullName: user.userMetadata?['full_name'] ?? '',
-        role: user.userMetadata?['role'] ?? 'adopter',
-        createdAt: DateTime.parse(user.createdAt),
+    try {
+      final profile = await remoteDataSource.registerAdoptante(
+        nombre: nombre,
+        email: email,
+        password: password,
+        telefono: telefono,
       );
+      return Right(profile.toEntity());
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
     }
-    return null;
   }
 
   @override
-  Future<String?> getUserRole() async {
-    return await localDataSource.getUserRole();
+  Future<Either<Failure, UserEntity>> registerRefugio({
+    required String nombre,
+    required String email,
+    required String password,
+    required String nombreRefugio,
+    required String direccion,
+    required double lat,
+    required double lng,
+    String? telefono,
+    String? descripcion,
+  }) async {
+    try {
+      final profile = await remoteDataSource.registerRefugio(
+        nombre: nombre,
+        email: email,
+        password: password,
+        nombreRefugio: nombreRefugio,
+        direccion: direccion,
+        lat: lat,
+        lng: lng,
+        telefono: telefono,
+      );
+      return Right(profile.toEntity());
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
   }
 
   @override
-  Future<bool> isAuthenticated() async {
-    return remoteDataSource.isAuthenticated();
+  Future<Either<Failure, UserEntity>> login({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final profile = await remoteDataSource.login(
+        email: email,
+        password: password,
+      );
+      return Right(profile.toEntity());
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, UserEntity>> loginWithGoogle() async {
+    try {
+      throw UnimplementedError('Google OAuth no implementado aún');
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> logout() async {
+    try {
+      await remoteDataSource.logout();
+      return const Right(null);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, UserEntity?>> getCurrentUser() async {
+    try {
+      final profile = await remoteDataSource.getCurrentUser();
+      return Right(profile?.toEntity());
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> resetPassword({required String email}) async {
+    try {
+      await remoteDataSource.resetPassword(email: email);
+      return const Right(null);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<bool> isLoggedIn() async {
+    try {
+      final result = await getCurrentUser();
+      return result.fold((failure) => false, (user) => user != null);
+    } catch (e) {
+      return false;
+    }
   }
 }

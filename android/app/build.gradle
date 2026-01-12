@@ -8,13 +8,15 @@ plugins {
 android {
     namespace = "com.example.petadopt_prueba2_app"
     // Forzar compileSdk/targetSdk para evitar errores con attrs (ej. lStar)
-    compileSdk = 35
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     // Migramos a Java 17 para compatibilidad con AGP 8.2.x
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        // Requerido para flutter_local_notifications (desugaring)
+        coreLibraryDesugaringEnabled = true
     }
 
     kotlinOptions {
@@ -23,8 +25,8 @@ android {
 
     defaultConfig {
     applicationId = "com.example.petadopt_prueba2_app"
-    minSdk = 21
-    targetSdk = 35
+    minSdkVersion = flutter.minSdkVersion
+    targetSdk = 36
     versionCode = flutter.versionCode
     versionName = flutter.versionName
 }
@@ -37,6 +39,11 @@ android {
             signingConfig = signingConfigs.debug
         }
     }
+}
+
+dependencies {
+    // Desugaring para compatibilidad de librerías core (requerido por flutter_local_notifications)
+    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.0.4"
 }
 
 flutter {
